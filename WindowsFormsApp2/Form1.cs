@@ -15,6 +15,11 @@ using System.Diagnostics;
 using Accord;
 using AForge.Video;
 using AForge.Video.DirectShow;
+using System.IO;
+using System.Text.RegularExpressions;
+
+//Debug line because I forget the syntax
+//Debug.WriteLine();
 
 namespace WindowsFormsApp2
 {
@@ -26,13 +31,33 @@ namespace WindowsFormsApp2
 
         public Form1()
         {
+            //Start the form code
             InitializeComponent();
-            getListCameraUSB();
+            GetListCameraUSB();
+
+            //Set startup sate and image blanks
+            button1.Enabled = false;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox1.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
         }
 
-        private void getListCameraUSB()
+        private void StopCamera()
         {
+            //If the camera is on, turn it off
+            if (filterInfoCollection.Count != 0)
+            {
+                if (videoCaptureDevice.IsRunning == true)
+                {
+                    videoCaptureDevice.Stop();
+                }
+            }
+        }
 
+        private void GetListCameraUSB()
+        {
+            //Get a list of the avalible camears and populate the combobox
             filterInfoCollection = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 
             if (filterInfoCollection.Count != 0)
@@ -46,50 +71,66 @@ namespace WindowsFormsApp2
             }
             else
             {
+                //Text to add if no cameras are found
                 comboBox1.Items.Add("No Cameras Found");
             }
-
             comboBox1.SelectedIndex = 0;
-            //
         }
 
-            private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
 
-            OpenFileDialog open = new OpenFileDialog();
-            // image filters  
-            open.Filter = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.jpg; *.jpeg; *.gif; *.bmp";
-            if (open.ShowDialog() == DialogResult.OK)
+            int retryCount = 0;
+
+            //Set text feilds while card is scanned
+            richTextBox1.Text = "Data Laoding";
+            richTextBox2.Text = "Data Laoding";
+            richTextBox3.Text = "Data Laoding";
+
+            //Pointer for rescan
+            retryscan:
+
+            //Where the magic happens
+            //Turn off the scan button to disable starting a new scan if a scan is in progress
+            button1.Enabled = false;
+
+            //Save a frame from the webcam
+            pictureBox2.Image.Save(@"..\\..\\..\\res\\card.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            //load prevously saved imagine into memory for use
+            using (FileStream fs = new FileStream("..\\..\\..\\res\\card.png", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var totalCount = 0;
+                byte[] buffer = new byte[fs.Length];
+                fs.Read(buffer, 0, (int)fs.Length);
+                using (MemoryStream ms = new MemoryStream(buffer))
+                    this.pictureBox1.Image = Image.FromStream(ms);
+            }
 
-                // display image in picture box  
-                pictureBox1.Image = new Bitmap(open.FileName);
-                // image file path  
-                string PicPath = open.FileName;
+            //OCR On currnet frame
+            IronTesseract IronOcr = new IronTesseract();
+            var Result = IronOcr.Read("..\\..\\..\\res\\card.png");
+            string text = Result.Text;
 
-                //OCR On currnet image
-                IronTesseract IronOcr = new IronTesseract();
-                var Result = IronOcr.Read(PicPath);
-                //Dispaly raw text
-                richTextBox1.Text = Result.Text;
+            //Remove blank lines
+            text = Regex.Replace(text, @"^\s*$\n|\r", string.Empty, RegexOptions.Multiline).TrimEnd();
 
-                // split string 
-                string text = Result.Text;                
-                string[] result = text.Split('\n');
+            //Dispaly raw text
+            richTextBox1.Text = text;
 
-                //Format set name and numnber
+            //Split string by lines
+            string[] result = text.Split('\n');
 
+            var totalCount = result.Count();
+
+            if (totalCount >= 2)
+            {
                 //Find last feilds from OCR where set name and number are found
-                totalCount = result.Count();
-
                 string setName = result[totalCount - 1];
                 string setNum = result[totalCount - 2];
                 string setNumOut;
                 int setNumLen;
 
-                //clean up set name feild to needed numbers only
+                //clean up set name feild to needed numbers/lettersz only
                 setName = setName.Remove(3);
                 setName = setName.ToLower();
 
@@ -103,7 +144,7 @@ namespace WindowsFormsApp2
                 setNum = setNum.Replace("H", "");
                 setNum = setNum.Trim();
 
-                setNumLen = setNum.Length;                
+                setNumLen = setNum.Length;
 
                 if (setNumLen <= 3)
                 {
@@ -111,7 +152,7 @@ namespace WindowsFormsApp2
                     setNum = setNum.TrimStart('0');
                     setNumOut = setNum.Trim();
                 }
-                else if(setNumLen == 4)
+                else if (setNumLen == 4)
                 {
                     setNum = setNum.Replace("/", "");
                     setNum = setNum.TrimStart('0');
@@ -120,14 +161,13 @@ namespace WindowsFormsApp2
                 else
                 {
                     setNum = setNum.Remove(4);
-                    setNum = setNum.Replace("/", "");               
+                    setNum = setNum.Replace("/", "");
                     setNum = setNum.TrimStart('0');
                     setNumOut = setNum.Trim();
                 }
 
-
                 // Create an API URI
-                string[] cardID = { "https://api.scryfall.com/cards/",setName,"/",setNumOut};
+                string[] cardID = { "https://api.scryfall.com/cards/", setName, "/", setNumOut };
 
                 string output = String.Join("", cardID);
 
@@ -135,17 +175,61 @@ namespace WindowsFormsApp2
                 richTextBox2.Text = output;
 
                 //Call the URI
-                using(var client = new HttpClient())
+                using (var client = new HttpClient())
                 {
                     var endpoint = new Uri(output);
                     var scrfallAPI = client.GetAsync(endpoint).Result.Content.ReadAsStringAsync().Result;
-                    //Debug.WriteLine(scrfallAPI);
 
-                    //Display the raw URI results
-                    richTextBox3.Text = scrfallAPI;
+                    //Filter data for check return
+                    var scrfallAPIAPICheck = scrfallAPI.Remove(20);
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace("/", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace("\n", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace(":", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace(" ", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace("{", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace(",", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace(".", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Replace("\"", "");
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.TrimEnd('i', 'd');
+                    scrfallAPIAPICheck = scrfallAPIAPICheck.Remove(0, 6);
 
+
+                    if (scrfallAPIAPICheck == "error" && retryCount < 5)
+                    {
+                        retryCount++;
+
+                        //string[] retryCountText = { "Scan failed, retying ", retryCount.ToString(), " times"};
+                        //textBox1.Text = String.Join("", retryCountText);
+                        //Debug.WriteLine(String.Join("", retryCountText));
+
+                        goto retryscan;
+                    }
+
+
+                    if (scrfallAPIAPICheck == "car")
+                    {
+                        //Pull useful data out of api return
+
+                        //Display the raw URI results
+                        richTextBox3.Text = scrfallAPIAPICheck;
+                        richTextBox4.Text = "Sucsess!";
+                    }
+                    else
+                    {
+                        //Display fail message if api return is in error
+                        //richTextBox3.Text = "";
+                        richTextBox4.Text = "Fail!";
+                    }
                 }
             }
+            else
+            {
+                //Display fail message if no card deteced
+                richTextBox1.Text = "No Vaild Data Found";
+                richTextBox2.Text = "No Vaild Data Found";
+                richTextBox3.Text = "No Vaild Data Found";
+            }
+            button1.Enabled = true;
         }
 
         private void richTextBox2_TextChanged(object sender, EventArgs e)
@@ -163,19 +247,40 @@ namespace WindowsFormsApp2
 
         }
 
+        public bool CamStartStop = true;
         private void button2_Click(object sender, EventArgs e)
-        {
-
-            if (filterInfoCollection.Count != 0)
+        {            
+            if (CamStartStop == true)
             {
-                videoCaptureDevice = new VideoCaptureDevice(filterInfoCollection[comboBox1.SelectedIndex].MonikerString);
-                videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrame;
-                videoCaptureDevice.Start();
+                //State of button when no camera active
+                button2.Text = "Stop Camera";
+                CamStartStop = false;
+
+                //Start the camera and set other elements
+                if (filterInfoCollection.Count != 0)
+                {
+                    videoCaptureDevice = new VideoCaptureDevice(filterInfoCollection[comboBox1.SelectedIndex].MonikerString);
+                    videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrame;
+                    comboBox1.Enabled = false;
+                    button1.Enabled = true;
+                    videoCaptureDevice.Start();
+                }
+                else
+                {
+                    //State of button when camera active
+                    string message = "No Camera Selected";
+                    MessageBox.Show(message);
+                }
             }
             else
             {
-                string message = "No Camera Selected";
-                MessageBox.Show(message);
+                button2.Text = "Start Camera";
+                StopCamera();
+                CamStartStop = true;
+                pictureBox2.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
+                comboBox1.Enabled = true;
+                button1.Enabled = false;
+
             }
         }
 
@@ -196,14 +301,19 @@ namespace WindowsFormsApp2
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //Form close routine
+            StopCamera();
+            File.Delete("..\\..\\..\\res\\card.png");
+        }
 
-            if (filterInfoCollection.Count != 0)
-            {
-                if (videoCaptureDevice.IsRunning == true)
-                {
-                    videoCaptureDevice.Stop();
-                }
-            }
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
