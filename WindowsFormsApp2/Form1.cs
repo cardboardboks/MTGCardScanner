@@ -26,11 +26,15 @@ namespace WindowsFormsApp2
     public partial class Form1 : Form
     {
 
+        List<string> CardsScannedlist = new List<string>();
+        string[] CardImageStack = new string[12];
+
         FilterInfoCollection filterInfoCollection;
         VideoCaptureDevice videoCaptureDevice;
 
         public Form1()
         {
+
             //Start the form code
             InitializeComponent();
             GetListCameraUSB();
@@ -41,6 +45,21 @@ namespace WindowsFormsApp2
             pictureBox1.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox2.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
+            pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox4.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox5.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox6.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox7.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox8.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox9.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox10.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox11.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox12.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox13.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox14.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox14.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
+            CardsScannedlist.Add( "--    Cards Scanned    --\n");
+            richTextBox2.SelectionAlignment = HorizontalAlignment.Center;
         }
 
         private void StopCamera()
@@ -84,11 +103,11 @@ namespace WindowsFormsApp2
 
             //Set text feilds while card is scanned
             richTextBox1.Text = "Data Laoding";
-            richTextBox2.Text = "Data Laoding";
             richTextBox3.Text = "Data Laoding";
+            richTextBox5.Text = "Data Laoding";
 
-            //Pointer for rescan
-            retryscan:
+        //Pointer for rescan
+        retryscan:
 
             //Where the magic happens
             //Turn off the scan button to disable starting a new scan if a scan is in progress
@@ -130,7 +149,9 @@ namespace WindowsFormsApp2
                 string setNumOut;
                 int setNumLen;
 
-                //clean up set name feild to needed numbers/lettersz only
+                //clean up set name feild to needed numbers/letters only
+                //Debug.WriteLine("setName");
+                //Debug.WriteLine(setName);
                 setName = setName.Remove(3);
                 setName = setName.ToLower();
 
@@ -172,7 +193,7 @@ namespace WindowsFormsApp2
                 string output = String.Join("", cardID);
 
                 //Display the URI
-                richTextBox2.Text = output;
+                //richTextBox2.Text = output;
 
                 //Call the URI
                 using (var client = new HttpClient())
@@ -200,7 +221,7 @@ namespace WindowsFormsApp2
 
                         //string[] retryCountText = { "Scan failed, retying ", retryCount.ToString(), " times"};
                         //textBox1.Text = String.Join("", retryCountText);
-                        //Debug.WriteLine(String.Join("", retryCountText));
+                        Debug.WriteLine(String.Join("", retryCount));
 
                         goto retryscan;
                     }
@@ -210,15 +231,132 @@ namespace WindowsFormsApp2
                     {
                         //Pull useful data out of api return
 
+                        //Card image URL
+                        int CardImgLoc = scrfallAPI.IndexOf("\"normal\":") + "\"normal\":".Length;
+
+                        string CardImg = scrfallAPI.Remove(0, CardImgLoc + 1);
+                        CardImgLoc = CardImg.IndexOf("\"");
+
+                        CardImg = CardImg.Remove(CardImgLoc);
+                        Debug.WriteLine(CardImg);
+
+                        //Card name
+                        int CardNameLoc = scrfallAPI.IndexOf("\"name\":") + "\"name\":".Length;
+
+                        string CardName = scrfallAPI.Remove(0, CardNameLoc + 1);
+                        CardNameLoc = CardName.IndexOf("\"");
+
+                        CardName = CardName.Remove(CardNameLoc);
+
+                        //Card current value
+                        int CardvalueLoc = scrfallAPI.IndexOf("\"prices\":") + "\"prices\":".Length;
+
+                        string Cardvalue = scrfallAPI.Remove(0, CardvalueLoc + 8); 
+                        CardvalueLoc = Cardvalue.IndexOf("\"");
+                        Cardvalue = Cardvalue.Remove(CardvalueLoc);
+
+                        //Card current value foil
+                        int CardvaluefoilLoc = scrfallAPI.IndexOf("\"prices\":") + "\"prices\":".Length;
+
+                        string Cardvaluefoil = scrfallAPI.Remove(0, CardvaluefoilLoc + 8); Debug.WriteLine(Cardvaluefoil);
+                        CardvaluefoilLoc = Cardvaluefoil.IndexOf("\"");
+                        Cardvaluefoil = Cardvaluefoil.Remove(CardvaluefoilLoc);
+
+                        //Card CMC
+                        int CardCMCLoc = scrfallAPI.IndexOf("\"cmc\":") + "\"cmc\":".Length;
+
+                        string CardCMC = scrfallAPI.Remove(0, CardCMCLoc);
+                        CardCMCLoc = CardCMC.IndexOf("\"");
+                        CardCMC = CardCMC.Remove(CardCMCLoc-3);
+
+                        //Card colour
+                        int CardcolourLoc = scrfallAPI.IndexOf("\"colors\":") + "\"colors\":".Length;
+
+                        string Cardcolour = scrfallAPI.Remove(0, CardcolourLoc+1);
+                        CardcolourLoc = Cardcolour.IndexOf("]");
+                        Cardcolour = Cardcolour.Remove(CardcolourLoc);
+
+                        int W = Cardcolour.IndexOf("W");
+                        int U = Cardcolour.IndexOf("U");
+                        int B = Cardcolour.IndexOf("B");
+                        int R = Cardcolour.IndexOf("R");
+                        int G = Cardcolour.IndexOf("G");
+
+                        List<string> Cardcolourlist = new List<string>();
+                        
+
+                         if (W != -1)
+                         {
+                            Cardcolourlist.Add("White");
+                         }
+                        if (U != -1)
+                        {
+                            Cardcolourlist.Add("Blue");
+                        }
+                        if (B != -1)
+                        {
+                            Cardcolourlist.Add("Black");
+                        }
+                        if (R != -1)
+                        {
+                            Cardcolourlist.Add("Red");
+                        }
+                        if (G != -1)
+                        {
+                            Cardcolourlist.Add("Green");
+                        }
+                        if (W == -1 && U == -1 && B == -1 && R == -1 && G == -1)
+                        {
+                            Cardcolourlist.Add("Colorless");
+                        }
+
+                        String[] CardcolourArry= Cardcolourlist.ToArray();
+
                         //Display the raw URI results
-                        richTextBox3.Text = scrfallAPIAPICheck;
-                        richTextBox4.Text = "Sucsess!";
+                        textBox2.Text = "\t--   Scan: Sucsess!   --";
+                        richTextBox5.AppendText("\n" + "Card Name \t" + CardName);
+                        if (Cardvalue == "ull,")
+                        {
+                            richTextBox5.AppendText("\n" + "Card Value \t" + "No Price for this Foiling");
+                        }
+                        else
+                        {
+                            richTextBox5.AppendText("\n" + "Card Value \t" + "$" + Cardvalue + " USD");
+                        }
+
+                        richTextBox5.AppendText("\n" + "Card CMC \t" + CardCMC);
+                        richTextBox5.AppendText("\n" + "Card Colour \t" + String.Join("\n \t \t", CardcolourArry));
+
+                        CardsScannedlist.Insert(1, CardName);
+
+                        String[] CardsScannedArry = CardsScannedlist.ToArray();
+
+                        richTextBox2.Text = String.Join("\n", CardsScannedArry);
+
+                        for (int i = 11; i > 0; i--)
+                        {
+                            CardImageStack[i] = CardImageStack[i - 1];
+                        }
+
+                        CardImageStack[0] = CardImg;
+
+                        pictureBox14.ImageLocation = CardImageStack[0];
+                        pictureBox13.ImageLocation = CardImageStack[1];
+                        pictureBox12.ImageLocation = CardImageStack[2];
+                        pictureBox11.ImageLocation = CardImageStack[3];
+                        pictureBox10.ImageLocation = CardImageStack[4];
+                        pictureBox9.ImageLocation = CardImageStack[5];
+                        pictureBox8.ImageLocation = CardImageStack[6];
+                        pictureBox7.ImageLocation = CardImageStack[7];
+                        pictureBox5.ImageLocation = CardImageStack[8];
+                        pictureBox4.ImageLocation = CardImageStack[9];
+                        pictureBox3.ImageLocation = CardImageStack[10];
+                        pictureBox6.ImageLocation = CardImageStack[11];
                     }
                     else
                     {
                         //Display fail message if api return is in error
-                        //richTextBox3.Text = "";
-                        richTextBox4.Text = "Fail!";
+                        textBox2.Text = "--   Scan: Fail!   --";
                     }
                 }
             }
@@ -226,15 +364,10 @@ namespace WindowsFormsApp2
             {
                 //Display fail message if no card deteced
                 richTextBox1.Text = "No Vaild Data Found";
-                richTextBox2.Text = "No Vaild Data Found";
                 richTextBox3.Text = "No Vaild Data Found";
+                richTextBox5.Text = "No Vaild Data Found";
             }
             button1.Enabled = true;
-        }
-
-        private void richTextBox2_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void richTextBox3_TextChanged(object sender, EventArgs e)
@@ -280,6 +413,9 @@ namespace WindowsFormsApp2
                 pictureBox2.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
                 comboBox1.Enabled = true;
                 button1.Enabled = false;
+                richTextBox1.Text = "Waiting...";
+                richTextBox3.Text = "Waiting...";
+                richTextBox5.Text = "Waiting...";
 
             }
         }
@@ -312,6 +448,16 @@ namespace WindowsFormsApp2
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
         }
