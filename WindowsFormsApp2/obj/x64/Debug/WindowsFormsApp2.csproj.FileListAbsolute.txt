@@ -352,3 +352,15 @@ D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\Windo
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.csproj.CopyComplete
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.exe
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.pdb
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.csproj.ResolveComReference.cache
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\ClosedXML.dll
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\DocumentFormat.OpenXml.dll
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\ExcelNumberFormat.dll
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\Irony.dll
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\System.IO.Packaging.dll
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\XLParser.dll
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\ClosedXML.xml
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\DocumentFormat.OpenXml.xml
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\ExcelNumberFormat.xml
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\System.IO.Packaging.xml
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\Interop.MSXML2.dll
