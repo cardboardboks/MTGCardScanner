@@ -53,6 +53,8 @@ namespace WindowsFormsApp2
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox6)).BeginInit();
@@ -127,7 +129,7 @@ namespace WindowsFormsApp2
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(265, 287);
+            this.pictureBox2.Location = new System.Drawing.Point(265, 343);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(250, 186);
             this.pictureBox2.TabIndex = 8;
@@ -136,7 +138,7 @@ namespace WindowsFormsApp2
             // 
             // richTextBox5
             // 
-            this.richTextBox5.Location = new System.Drawing.Point(265, 151);
+            this.richTextBox5.Location = new System.Drawing.Point(265, 207);
             this.richTextBox5.Name = "richTextBox5";
             this.richTextBox5.ReadOnly = true;
             this.richTextBox5.Size = new System.Drawing.Size(250, 130);
@@ -145,10 +147,10 @@ namespace WindowsFormsApp2
             // 
             // richTextBox2
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(265, 505);
+            this.richTextBox2.Location = new System.Drawing.Point(265, 560);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(250, 297);
+            this.richTextBox2.Size = new System.Drawing.Size(250, 242);
             this.richTextBox2.TabIndex = 13;
             this.richTextBox2.Text = "";
             // 
@@ -266,7 +268,7 @@ namespace WindowsFormsApp2
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(265, 479);
+            this.textBox1.Location = new System.Drawing.Point(265, 535);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(250, 19);
@@ -279,7 +281,7 @@ namespace WindowsFormsApp2
             // 
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox2.Location = new System.Drawing.Point(265, 126);
+            this.textBox2.Location = new System.Drawing.Point(265, 182);
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
             this.textBox2.Size = new System.Drawing.Size(250, 19);
@@ -298,11 +300,31 @@ namespace WindowsFormsApp2
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(265, 126);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(250, 23);
+            this.button4.TabIndex = 30;
+            this.button4.Text = "Connect Scanner";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(265, 155);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(250, 21);
+            this.comboBox2.TabIndex = 31;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1658, 813);
+            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
@@ -376,6 +398,8 @@ namespace WindowsFormsApp2
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.ComboBox comboBox2;
     }
 }
 

@@ -19,6 +19,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using System.Globalization;
+using System.IO.Ports;
 
 //Debug line because I forget the syntax
 //Debug.WriteLine();
@@ -36,17 +37,13 @@ namespace WindowsFormsApp2
 
         DataTable CardTable = new DataTable();
 
-        public bool CamStartStop = true;
+        public bool CamStartStop = true; 
+        public bool SerialStop = true;
 
         decimal CardvalueTotal = 0;
 
         public Form1()
         {
-            CardTable.Columns.Add("Card Name", typeof(string));
-            CardTable.Columns.Add("Card Value", typeof(double));
-            CardTable.Columns.Add("Card CMC", typeof(int));
-            CardTable.Columns.Add("Card Colour", typeof(string));
-
             //Start the form code
             InitializeComponent();
             GetListCameraUSB();
@@ -82,6 +79,12 @@ namespace WindowsFormsApp2
             pictureBox4.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
             pictureBox3.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
             pictureBox6.Image = Image.FromFile(@"..\\..\\..\\res\\camPlace.png");
+
+            CardTable.Columns.Add("Card Name", typeof(string));
+            CardTable.Columns.Add("Card Value", typeof(double));
+            CardTable.Columns.Add("Card Rarity", typeof(string));
+            CardTable.Columns.Add("Card CMC", typeof(int));
+            CardTable.Columns.Add("Card Colour", typeof(string));
 
             CardsScannedlist.Insert(0, "Total Value \t $0.00");
         }
@@ -153,9 +156,8 @@ namespace WindowsFormsApp2
             comboBox1.SelectedIndex = 0;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void ScanCard()
         {
-
             int retryCount = 0;
 
             //Set text feilds while card is scanned
@@ -311,6 +313,14 @@ namespace WindowsFormsApp2
                         CardvalueLoc = Cardvalue.IndexOf("\"");
                         Cardvalue = Cardvalue.Remove(CardvalueLoc);
 
+                        //Card rarity
+                        int CardRarityLoc = scrfallAPI.IndexOf("\"rarity\":") + "\"rarity\":".Length;
+
+                        string CardRarity = scrfallAPI.Remove(0, CardRarityLoc + 1);
+                        CardRarityLoc = CardRarity.IndexOf("\"");
+                        CardRarity = CardRarity.Remove(CardRarityLoc);
+                        CardRarity = Regex.Replace(CardRarity, @"\b(\w)", m => m.Value.ToUpper());
+
                         //Card current value foil
                         int CardvaluefoilLoc = scrfallAPI.IndexOf("\"prices\":") + "\"prices\":".Length;
 
@@ -369,8 +379,7 @@ namespace WindowsFormsApp2
                         String[] CardcolourArry = Cardcolourlist.ToArray();
 
                         //Display the raw URI results
-                        textBox2.Text = "--  Scan: Sucsess!  --";
-                        richTextBox5.Text = "\n" + "Card Name \t" + CardName;
+                        richTextBox5.Text = "Card Name \t" + CardName;
                         if (Cardvalue == "ull,")
                         {
                             richTextBox5.AppendText("\n" + "Card Value \t" + "No Price for this Foiling");
@@ -379,22 +388,29 @@ namespace WindowsFormsApp2
                         {
                             richTextBox5.AppendText("\n" + "Card Value \t" + "$" + Cardvalue + " USD");
                         }
-
+                        richTextBox5.AppendText("\n" + "Card Rarity \t" + CardRarity);
                         richTextBox5.AppendText("\n" + "Card CMC \t" + CardCMC);
                         richTextBox5.AppendText("\n" + "Card Colour \t" + String.Join("\n \t \t", CardcolourArry));
 
                         CardvalueTotal = CardvalueTotal + Convert.ToDecimal(Cardvalue);
 
-                        CardsScannedlist.Insert(0, "Total Value \t $" + decimal.Round(CardvalueTotal, 2).ToString("0.00"));
+                        CardsScannedlist.Insert(0, "Total Value \t \t $" + decimal.Round(CardvalueTotal, 2).ToString("0.00"));
                         CardsScannedlist.RemoveAt(1);
 
-                        CardsScannedlist.Insert(1, CardName + "\t $" + Cardvalue);
-
+                        if (CardRarity == "Uncommon")
+                        {
+                            CardsScannedlist.Insert(1, CardName + "\n" + CardRarity + "\t \t $" + Cardvalue);
+                        }
+                        else
+                        {
+                            CardsScannedlist.Insert(1, CardName + "\n" + CardRarity + "\t \t \t $" + Cardvalue);
+                        }
+                        
                         String[] CardsScannedArry = CardsScannedlist.ToArray();
 
                         richTextBox2.Text = String.Join("\n", CardsScannedArry);
 
-                        CardTable.Rows.Add(CardName, Convert.ToDouble(Cardvalue), Convert.ToInt32(CardCMC), String.Join(",", CardcolourArry));
+                        CardTable.Rows.Add(CardName, Convert.ToDouble(Cardvalue), CardRarity, Convert.ToInt32(CardCMC), String.Join(",", CardcolourArry));
 
                         for (int i = 11; i > 0; i--)
                         {
@@ -430,6 +446,11 @@ namespace WindowsFormsApp2
                 richTextBox5.Text = "No Vaild Data Found";
             }
             button1.Enabled = true;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ScanCard();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -491,7 +512,12 @@ namespace WindowsFormsApp2
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            string[] portNames = SerialPort.GetPortNames();     //<-- Reads all available comPorts
+            foreach (var portName in portNames)
+            {
+                comboBox2.Items.Add(portName);                  //<-- Adds Ports to combobox
+            }
+            comboBox2.SelectedIndex = 0;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -517,6 +543,42 @@ namespace WindowsFormsApp2
         private void button3_Click_1(object sender, EventArgs e)
         {
             SaveData();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+
+
+
+            if (SerialStop == true)
+            {
+                //State of button when no camera active
+                button4.Text = "Disconnect Scanner";
+                SerialStop = false;
+
+                //Start the camera and set other elements
+                if (filterInfoCollection.Count != 0)
+                {
+                    SerialPort serialPort = new SerialPort(comboBox2.Text, 19200, Parity.None, 8, StopBits.One);
+                    comboBox2.Enabled = false;
+                }
+                else
+                {
+                    //State of button when camera active
+                    string message = "No Port";
+                    MessageBox.Show(message);
+                }
+            }
+            else
+            {
+                button4.Text = "Connect Scanner";
+                SerialStop = true;
+                comboBox2.Enabled = true;
+            }
+
+
+
         }
     }
 }
