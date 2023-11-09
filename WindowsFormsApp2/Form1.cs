@@ -33,7 +33,7 @@ namespace WindowsFormsApp2
         string[] CardImageStack = new string[12];
 
         FilterInfoCollection filterInfoCollection;
-        VideoCaptureDevice videoCaptureDevice;
+        VideoCaptureDevice videoCaptureDevice;      
 
         DataTable CardTable = new DataTable();
 
@@ -41,6 +41,8 @@ namespace WindowsFormsApp2
         public bool SerialStop = true;
 
         decimal CardvalueTotal = 0;
+
+        SerialPort CardScanPort = new SerialPort();
 
         public Form1()
         {
@@ -131,7 +133,11 @@ namespace WindowsFormsApp2
             //Form close routine
             SaveData();
             StopCamera();
-            File.Delete("..\\..\\..\\res\\card.png");
+            if (CardScanPort.IsOpen)
+            {
+                SerialStop = true;
+            }
+                File.Delete("..\\..\\..\\res\\card.png");
         }
 
         private void GetListCameraUSB()
@@ -154,6 +160,14 @@ namespace WindowsFormsApp2
                 comboBox1.Items.Add("No Cameras Found");
             }
             comboBox1.SelectedIndex = 0;
+        }
+
+        private void XYControl(int X, int Y)
+        {
+            SerialPort CardScanPort = new SerialPort(comboBox2.Text, 115200, Parity.None, 8, StopBits.One);
+            CardScanPort.Open();
+            CardScanPort.Write("<" + X.ToString() + "," + Y.ToString() + ">");
+            CardScanPort.Close();
         }
 
         private void ScanCard()
@@ -208,8 +222,8 @@ namespace WindowsFormsApp2
                 int setNumLen;
 
                 //clean up set name feild to needed numbers/letters only
-                //Debug.WriteLine("setName");
-                //Debug.WriteLine(setName);
+                Debug.WriteLine("setName");
+                Debug.WriteLine(setName);
                 setName = setName.Remove(3);
                 setName = setName.ToLower();
 
@@ -394,16 +408,16 @@ namespace WindowsFormsApp2
 
                         CardvalueTotal = CardvalueTotal + Convert.ToDecimal(Cardvalue);
 
-                        CardsScannedlist.Insert(0, "Total Value \t \t $" + decimal.Round(CardvalueTotal, 2).ToString("0.00"));
+                        CardsScannedlist.Insert(0, "Total Value \t \t $" + decimal.Round(CardvalueTotal, 2).ToString("0.00") + "\n" + "- - - - - - - - -");
                         CardsScannedlist.RemoveAt(1);
 
                         if (CardRarity == "Uncommon")
                         {
-                            CardsScannedlist.Insert(1, CardName + "\n" + CardRarity + "\t \t $" + Cardvalue);
+                            CardsScannedlist.Insert(1, CardName + "\n" + CardRarity + "\t \t $" + Cardvalue + "\n" + "- - - - - - - - -");
                         }
                         else
                         {
-                            CardsScannedlist.Insert(1, CardName + "\n" + CardRarity + "\t \t \t $" + Cardvalue);
+                            CardsScannedlist.Insert(1, CardName + "\n" + CardRarity + "\t \t \t $" + Cardvalue + "\n" + "- - - - - - - - -");
                         }
                         
                         String[] CardsScannedArry = CardsScannedlist.ToArray();
@@ -547,21 +561,16 @@ namespace WindowsFormsApp2
 
         private void button4_Click(object sender, EventArgs e)
         {
-
-
-
-
             if (SerialStop == true)
             {
                 //State of button when no camera active
                 button4.Text = "Disconnect Scanner";
                 SerialStop = false;
 
-                //Start the camera and set other elements
+                //Connect to scanner and set other elements
                 if (filterInfoCollection.Count != 0)
                 {
-                    SerialPort serialPort = new SerialPort(comboBox2.Text, 19200, Parity.None, 8, StopBits.One);
-                    comboBox2.Enabled = false;
+                    comboBox2.Enabled = false;                    
                 }
                 else
                 {
@@ -576,9 +585,35 @@ namespace WindowsFormsApp2
                 SerialStop = true;
                 comboBox2.Enabled = true;
             }
+        }
 
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
+        }
 
+        private void button5_Click(object sender, EventArgs e)
+        {
+            
+
+            ScanCard();
+            XYControl(0, 0);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            ScanCard();
+            XYControl(-5000, -5000);
+
+            
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            ScanCard();
+            XYControl(-11000, -2000);
+
+           
         }
     }
 }
