@@ -39,6 +39,9 @@ namespace WindowsFormsApp2
 
         public bool CamStartStop = true; 
         public bool SerialStop = true;
+        public bool moveWaiting = true;
+
+        // string serialDataIn = "1";
 
         decimal CardvalueTotal = 0;
 
@@ -89,6 +92,35 @@ namespace WindowsFormsApp2
             CardTable.Columns.Add("Card Colour", typeof(string));
 
             CardsScannedlist.Insert(0, "Total Value \t $0.00");
+        }
+
+        public void moveWait()
+        {
+            SerialPort CardScanPort = new SerialPort(comboBox2.Text, 115200, Parity.None, 8, StopBits.One);
+            CardScanPort.ReadTimeout = 5000;
+            CardScanPort.Open();
+
+            while (moveWaiting)
+            {
+                try
+                {
+                    string indata = CardScanPort.ReadLine();
+                    Console.Write(indata);
+
+                    if (indata.Contains("Y"))
+                    {
+                        moveWaiting = false;
+                        Console.WriteLine("Move Complete");
+                    }
+                }
+                catch (TimeoutException) {
+                    moveWaiting = false;
+                    Console.WriteLine("Timeout");
+                }
+            }
+
+            moveWaiting = true;
+            CardScanPort.Close();
         }
 
         private void StopCamera()
@@ -566,18 +598,23 @@ namespace WindowsFormsApp2
                 //State of button when no camera active
                 button4.Text = "Disconnect Scanner";
                 SerialStop = false;
+                comboBox2.Enabled = false;
 
-                //Connect to scanner and set other elements
-                if (filterInfoCollection.Count != 0)
+                try
                 {
-                    comboBox2.Enabled = false;                    
+                    SerialPort CardScanPort = new SerialPort(comboBox2.Text, 115200, Parity.None, 8, StopBits.One);
+                    CardScanPort.Open();
+                    CardScanPort.Close();
                 }
-                else
+                catch (Exception)
                 {
-                    //State of button when camera active
-                    string message = "No Port";
+                    button4.Text = "Connect Scanner";
+                    SerialStop = true;
+                    comboBox2.Enabled = true;
+                    string message = "Port Busy";
                     MessageBox.Show(message);
                 }
+
             }
             else
             {
@@ -585,6 +622,7 @@ namespace WindowsFormsApp2
                 SerialStop = true;
                 comboBox2.Enabled = true;
             }
+            
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
@@ -594,26 +632,36 @@ namespace WindowsFormsApp2
 
         private void button5_Click(object sender, EventArgs e)
         {
-            
-
-            ScanCard();
             XYControl(0, 0);
+            moveWait();
+           // ScanCard();
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
-            ScanCard();
-            XYControl(-5000, -5000);
-
-            
+            XYControl(10000, 10000);
+            moveWait();
+          //  ScanCard();
         }
 
         private void button7_Click(object sender, EventArgs e)
         {
-            ScanCard();
-            XYControl(-11000, -2000);
+            XYControl(-10000, -10000);
+            moveWait();
+           // ScanCard();
+        }
 
-           
+        private void button9_Click(object sender, EventArgs e)
+        {
+            XYControl(-100, -100);
+
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            XYControl(100, 100);
+            moveWait();
+            //ScanCard();
         }
     }
 }

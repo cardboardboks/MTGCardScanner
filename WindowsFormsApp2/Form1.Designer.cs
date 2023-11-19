@@ -365,6 +365,7 @@ namespace WindowsFormsApp2
             this.button8.TabIndex = 35;
             this.button8.Text = "A-D";
             this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // button9
             // 
@@ -374,6 +375,7 @@ namespace WindowsFormsApp2
             this.button9.TabIndex = 39;
             this.button9.Text = "A-D";
             this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button10
             // 
