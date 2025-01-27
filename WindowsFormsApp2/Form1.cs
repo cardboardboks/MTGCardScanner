@@ -563,7 +563,14 @@ namespace WindowsFormsApp2
             {
                 comboBox2.Items.Add(portName);                  //<-- Adds Ports to combobox
             }
-            comboBox2.SelectedIndex = 0;
+
+            if (comboBox2.Items.Count == 0)
+            {
+                comboBox2.Items.Add("No Ports");
+                comboBox2.SelectedIndex = 0;
+            }
+
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
