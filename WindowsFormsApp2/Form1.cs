@@ -302,8 +302,17 @@ namespace WindowsFormsApp2
                 //Call the URI
                 using (var client = new HttpClient())
                 {
+                    client.DefaultRequestHeaders.Add("User-Agent", "xxxxxxxxx");
+                    client.DefaultRequestHeaders.Add("Accept", "*/*");
                     var endpoint = new Uri(output);
                     var scrfallAPI = client.GetAsync(endpoint).Result.Content.ReadAsStringAsync().Result;
+
+
+                    Debug.WriteLine("check output");
+                    Debug.WriteLine(endpoint);
+
+                    Debug.WriteLine(scrfallAPI);
+
 
                     //Filter data for check return
                     var scrfallAPIAPICheck = scrfallAPI.Remove(20);
@@ -319,12 +328,14 @@ namespace WindowsFormsApp2
                     scrfallAPIAPICheck = scrfallAPIAPICheck.Remove(0, 6);
 
 
+
+
                     if (scrfallAPIAPICheck == "error" && retryCount < 5)
                     {
                         retryCount++;
 
-                        //string[] retryCountText = { "Scan failed, retying ", retryCount.ToString(), " times"};
-                        //textBox1.Text = String.Join("", retryCountText);
+                        string[] retryCountText = { "Scan failed, retying ", retryCount.ToString(), " times"};
+                        textBox1.Text = String.Join("", retryCountText);
                         Debug.WriteLine(String.Join("", retryCount));
 
                         goto retryscan;

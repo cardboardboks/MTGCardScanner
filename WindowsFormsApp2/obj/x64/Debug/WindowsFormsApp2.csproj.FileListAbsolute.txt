@@ -345,7 +345,6 @@ D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\Syste
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\System.Threading.Tasks.Extensions.xml
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\System.ValueTuple.xml
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.csproj.AssemblyReference.cache
-D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.Form1.resources
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.Properties.Resources.resources
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.csproj.GenerateResource.cache
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.csproj.CoreCompileInputs.cache
@@ -364,3 +363,4 @@ D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\Docum
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\ExcelNumberFormat.xml
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\bin\x64\Debug\System.IO.Packaging.xml
 D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\Interop.MSXML2.dll
+D:\Hadley\Documents\GIT\Code\MTGCardScanner\WindowsFormsApp2\obj\x64\Debug\WindowsFormsApp2.Form1.resources
