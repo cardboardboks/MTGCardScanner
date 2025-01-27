@@ -521,11 +521,18 @@ namespace WindowsFormsApp2
                 //Start the camera and set other elements
                 if (filterInfoCollection.Count != 0)
                 {
+                    
                     videoCaptureDevice = new VideoCaptureDevice(filterInfoCollection[comboBox1.SelectedIndex].MonikerString);
                     videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrame;
                     comboBox1.Enabled = false;
                     button1.Enabled = true;
+                    videoCaptureDevice.VideoResolution = videoCaptureDevice.VideoCapabilities[0];
                     videoCaptureDevice.Start();
+
+                    
+
+
+
                 }
                 else
                 {
