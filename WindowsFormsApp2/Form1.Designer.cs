@@ -137,9 +137,9 @@ namespace WindowsFormsApp2
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(265, 343);
+            this.pictureBox2.Location = new System.Drawing.Point(265, 235);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(250, 186);
+            this.pictureBox2.Size = new System.Drawing.Size(250, 396);
             this.pictureBox2.TabIndex = 8;
             this.pictureBox2.TabStop = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
@@ -149,7 +149,7 @@ namespace WindowsFormsApp2
             this.richTextBox5.Location = new System.Drawing.Point(265, 207);
             this.richTextBox5.Name = "richTextBox5";
             this.richTextBox5.ReadOnly = true;
-            this.richTextBox5.Size = new System.Drawing.Size(250, 130);
+            this.richTextBox5.Size = new System.Drawing.Size(250, 113);
             this.richTextBox5.TabIndex = 10;
             this.richTextBox5.Text = "";
             // 
@@ -276,7 +276,7 @@ namespace WindowsFormsApp2
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(265, 535);
+            this.textBox1.Location = new System.Drawing.Point(265, 541);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(250, 19);

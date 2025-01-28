@@ -529,10 +529,6 @@ namespace WindowsFormsApp2
                     videoCaptureDevice.VideoResolution = videoCaptureDevice.VideoCapabilities[0];
                     videoCaptureDevice.Start();
 
-                    
-
-
-
                 }
                 else
                 {
@@ -556,7 +552,12 @@ namespace WindowsFormsApp2
 
         private void VideoCaptureDevice_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            pictureBox2.Image = (Bitmap)eventArgs.Frame.Clone();
+            //pictureBox2.Image = (Bitmap)eventArgs.Frame.Clone();
+
+            Image img = (Bitmap)eventArgs.Frame.Clone();
+            img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            pictureBox2.Image = img;
+
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
