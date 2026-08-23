@@ -1,0 +1,38 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- The task dll will be copied next to this targets file when injected -->
+  <UsingTask
+    TaskName="SixLabors.Licensing.ValidateLicenseTask"
+    AssemblyFile="$(MSBuildThisFileDirectory)net8.0\SixLabors.Licensing.dll"
+    Runtime="NET"
+    Condition="'$(MSBuildRuntimeType)' == 'Core'" />
+
+  <!-- Visual Studio MSBuild (CLR4 runtime) -->
+  <UsingTask
+    TaskName="SixLabors.Licensing.ValidateLicenseTask"
+    AssemblyFile="$(MSBuildThisFileDirectory)net472\SixLabors.Licensing.dll"
+    Runtime="CLR4"
+    Condition="'$(MSBuildRuntimeType)' != 'Core'" />
+
+  <Target Name="SixLabors_ValidateLicense"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    
+    <ItemGroup Condition="'$(SixLaborsLicenseKey)' == ''">
+      <!-- Allow override, otherwise search recursively for sixlabors.lic -->
+      <LicenseFiles Include="$(SixLaborsLicenseFile)" Condition="'$(SixLaborsLicenseFile)' != ''" />
+      <LicenseFiles Include="**/sixlabors.lic" Condition="'$(SixLaborsLicenseFile)' == ''" />
+    </ItemGroup>
+
+    <!-- Command-line properties use MSBuild escaping, so restore the license separators before validation. -->
+    <ValidateLicenseTask
+      LicenseKey="$([MSBuild]::Unescape('$(SixLaborsLicenseKey)'))"
+      LicenseFilePath="@(LicenseFiles)"
+      StrongKey="$(SixLaborsPublicKey)"
+      PublicKey="MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEkhrouMBM/eObv7KXUydiNRFMBAwN2FxKsN+vLV09zC6XXf+9vE/wRhIfXPThsZqJmTAXszvMu8yaZWqpBZyfsg=="
+      AssemblyName="$(AssemblyName)"
+      ContinueOnError="$(Configuration.StartsWith('Debug'))" />
+    
+  </Target>
+
+</Project>
